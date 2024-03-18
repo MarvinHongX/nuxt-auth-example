@@ -42,9 +42,6 @@ const errors = ref({
 });
 
 definePageMeta({
-
-});
-definePageMeta({
     layout: false,
     middleware: ['signup-agree-token-only']
 });
