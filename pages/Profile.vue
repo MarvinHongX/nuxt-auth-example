@@ -4,6 +4,14 @@ import AppConfig from '@/layouts/AppConfig.vue';
 const { authUser } = await useAuth()
 const { flag_placeholderUrl } = useImg();
 
+definePageMeta({
+    middleware: ['user-only']
+});
+
+watch(authUser, () => {
+    goToSignInPage();
+});
+
 </script>
 
 <template>
