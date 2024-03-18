@@ -28,8 +28,8 @@ const signUpUser = async (user) => {
         },
     });
 
-    const { userId, name, userFg } = newUser;
-    return { userId, name, userFg };
+    const { userId, name, userFg, phone } = newUser;
+    return { userId, name, userFg, phone };
 };
 
 const signInUser = async (user) => {
@@ -42,8 +42,8 @@ const signInUser = async (user) => {
         throw new Error("Password is incorrect");
     }
 
-    const { userId, name, userFg } = checkUser;
-    return { userId, name, userFg };
+    const { userId, name, userFg, phone } = checkUser;
+    return { userId, name, userFg, phone };
 };
 
 const existUser = async (user) => {
@@ -108,8 +108,8 @@ const getTokenUser = async (event) => {
     if (!checkUser) {
         return null;
     }
-    const { userId, name, userFg } = checkUser;
-    return { userId, name, userFg };
+    const { userId, name, userFg, phone } = checkUser;
+    return { userId, name, userFg, phone };
 };
 
 

@@ -22,3 +22,7 @@ export const goToSignUpPage = (token) => {
 export const goToNotFoundPage = () => {
     navigateTo('/notfound');
 }
+
+export const goToProfilePage = () => {
+    navigateTo('/profile');
+}

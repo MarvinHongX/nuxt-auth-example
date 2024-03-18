@@ -91,7 +91,7 @@ const isOutsideClicked = (event) => {
 
                     <div class="text-900 font-bold text-2xl mb-3">Hi, {{ authUser?.name }}!</div>
                     <div class="text-700 text-2xl mb-5"></div>
-                    <Button label="Manage Account" class="mr-3 font-bold px-2 py-3 p-button-raised p-button-rounded white-space-nowrap"></Button>
+                    <Button @click="goToProfilePage()" label="Manage Account" class="mr-3 font-bold px-2 py-3 p-button-raised p-button-rounded white-space-nowrap"></Button>
                     <Button @click="onSignOutClick()" label="Sign Out" severity="secondary" icon="pi pi-sign-out" class="px-2 py-3 p-button-raised p-button-rounded white-space-nowrap"></Button>
                 </div>
             </OverlayPanel>

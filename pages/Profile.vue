@@ -1,0 +1,74 @@
+<script setup>
+import { ref, computed } from 'vue';
+import AppConfig from '@/layouts/AppConfig.vue';
+const { authUser } = await useAuth()
+const { flag_placeholderUrl } = useImg();
+
+</script>
+
+<template>
+    <div class="grid">
+        <div class="col-12">
+            <div class="card mb-0">
+                <div class="text-700 text-center">
+                    <Avatar :label="authUser?.name?.charAt(0)" class="mr-2" size="xlarge" shape="circle"></Avatar>
+
+                    <div class="text-900 font-bold text-2xl mb-3">Hi, {{ authUser?.name }}!</div>
+                    <div class="text-700 text-2xl mb-5"></div>
+                </div>
+                <div class="card border-none">
+                    <div class="surface-section">
+                        <div class="font-medium text-3xl text-900 mb-3">Edit Profile</div>
+                        <div class="text-500 mb-5">Some info may be visible to other people using services.</div>
+                        <ul class="list-none p-0 m-0">
+                            <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
+                                <div class="text-500 w-6 md:w-2 font-medium">Name</div>
+                                <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">{{ authUser?.name  }}</div>
+                                <div class="w-6 md:w-2 flex justify-content-end">
+                                    <Button label="Edit" icon="pi pi-pencil" class="p-button-text"></Button>
+                                </div>
+                            </li>
+                            <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
+                                <div class="text-500 w-6 md:w-2 font-medium">Phone</div>
+                                <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">{{ getFormattedPhoneNumber(authUser?.phone) }}</div>
+                                <div class="w-6 md:w-2 flex justify-content-end">
+                                    <Button label="Edit" icon="pi pi-pencil" class="p-button-text"></Button>
+                                </div>
+                            </li>
+                            <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
+                                <div class="text-500 w-6 md:w-2 font-medium">Country</div>
+                                <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">
+                                    <img alt="flag" :src="flag_placeholderUrl" :class="`flag flag-${getCountryCodeByPhoneCode(authUser?.phone.country)}`" style="width: 24px" />
+                                </div>
+                                <div class="w-6 md:w-2 flex justify-content-end">
+                                    <Button label="Edit" icon="pi pi-pencil" class="p-button-text"></Button>
+                                </div>
+                            </li>
+                            <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
+                                <div class="text-500 w-6 md:w-2 font-medium">User Flag</div>
+                                <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">
+                                    <Chip :label="getUserFgName(authUser?.userFg)" class="mr-2"></Chip>
+                                </div>
+                                <div class="w-6 md:w-2 flex justify-content-end">
+                                    <Button label="Edit" icon="pi pi-pencil" class="p-button-text"></Button>
+                                </div>
+                            </li>
+                            <li class="flex align-items-center py-3 px-2 border-top-1 border-bottom-1 surface-border flex-wrap">
+                                <div class="text-500 w-6 md:w-2 font-medium">Password</div>
+                                <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1 line-height-3">
+                                    •••••••• </div>
+                                <div class="w-6 md:w-2 flex justify-content-end">
+                                    <Button label="Edit" icon="pi pi-pencil" class="p-button-text"></Button>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <AppConfig simple />
+</template>
+
+<style scoped>
+</style>

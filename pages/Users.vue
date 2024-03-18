@@ -94,7 +94,7 @@ onMounted(() => {
                     <Column field="userFg" filterField="userFg">
                         <template #header v-if="!loading1"> User Flag</template>
                         <template #body="{ data }">
-                            {{ getUserFgName(data.userFg) }}
+                            <Chip :label="getUserFgName(data.userFg)" class="mr-2"></Chip>
                         </template>
                     </Column>
                 </DataTable>
