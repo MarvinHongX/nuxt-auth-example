@@ -66,5 +66,16 @@ const updateUserName = async (userId, name) => {
     return userToUpdate;
 };
   
+const updateUserPassword = async (userId, password) => {
+    const userToUpdate = users.find(user => user.userId === userId);
+    
+    if (!userToUpdate) {
+        throw new Error(`User with userId ${userId} not found`);
+    }
+    
+    userToUpdate.password = password;
+    
+    return userToUpdate;
+};
   
-export { getUsers, getUserById, getUserByPhone, createUser, updateUserName }
+export { getUsers, getUserById, getUserByPhone, createUser, updateUserName, updateUserPassword }

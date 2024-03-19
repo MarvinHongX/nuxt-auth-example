@@ -6,8 +6,11 @@ definePageMeta({
 });
 
 watch(authUser, () => {
-    if (authUser.userId == '') goToSignInPage();
+    if (!authUser.value || authUser.value.userId == '') {
+        goToSignInPage();
+    }
 });
+
 
 </script>
 

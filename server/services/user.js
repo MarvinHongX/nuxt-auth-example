@@ -1,4 +1,4 @@
-import { getUserById, getUserByPhone, createUser, getUsers, updateUserName } from "@/server/models/user";
+import { getUserById, getUserByPhone, createUser, getUsers, updateUserName, updateUserPassword } from "@/server/models/user";
 import { hashPassword, verifyPassword } from "@/server/utils/password";
 import { createAgreeToken, verifyAgreeToken, verifyToken } from "@/server/utils/session"
 
@@ -135,11 +135,30 @@ const allUsers = async (event) => {
 };
 
 const updateName = async (userId, name) => {
-    if (!userId || userId == '') return false;
-    if (!name || name == '') return false;
+    if (!userId || userId == '') return null;
+    if (!name || name == '') return null;
 
     const user = await updateUserName(userId, name);
     return user || null;
 };
 
-export { signUpAgree, signUpAgreed, signUpUser, signInUser, existUser, helpUser, helpCodeUser, getTokenUser, allUsers, updateName }
+const updatePassword = async (userId, body) => {
+    if (!userId || userId == '') return null;
+    if (!body.currentPassword || body.currentPassword == '') return null;
+    if (!body.newPassword || body.newPassword == '') return null;
+
+    const { currentPassword, newPassword } = body;
+    const checkUser = await getUserById(userId);
+    if (!checkUser) {
+        throw new Error("User not found");
+    }
+    const checkPassword = await verifyPassword(currentPassword, checkUser.password);
+    if (!checkPassword) {
+        throw new Error("Password is incorrect");
+    }
+    const hashedNewPassword = await hashPassword(newPassword);
+    const user = await updateUserPassword(userId, hashedNewPassword);
+    return user || null;
+};
+
+export { signUpAgree, signUpAgreed, signUpUser, signInUser, existUser, helpUser, helpCodeUser, getTokenUser, allUsers, updateName, updatePassword }

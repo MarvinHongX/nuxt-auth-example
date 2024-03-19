@@ -143,6 +143,24 @@ export const useAuth = () => {
         }
     };
 
+    const updatePassword = async (currentPassword, newPassword) => {
+        try {
+            const data = await $fetch('/api/user/updatepassword', {
+                method: 'POST',
+                body: {
+                    currentPassword,
+                    newPassword
+                },
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            return data;
+        } catch (err) {
+            return null;
+        }
+    };
+
     return {
         signUp,
         signUpAgree,
@@ -155,5 +173,6 @@ export const useAuth = () => {
         signOut,
         authUser,
         updateName,
+        updatePassword,
     };
 };

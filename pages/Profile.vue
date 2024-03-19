@@ -1,34 +1,118 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import AppConfig from '@/layouts/AppConfig.vue';
-const { authUser, updateName } = await useAuth()
+const { authUser, updateName, updatePassword } = await useAuth()
 const { flag_placeholderUrl } = useImg();
 
-const editedName = ref(null);
+const newName = ref('');
 const isEditingName = ref(false);
-
-const editName = () => {
-    isEditingName.value = true;
-    editedName.value = authUser.value.name;
-}
-
-const saveName = () => {
-    updateName(editedName.value);
-    isEditingName.value = false;
-}
-
-const cancelEdit = () => {
-
-    isEditingName.value = false;
-}
+const isEditingPassword = ref(false);
+const currentPassword = ref('');
+const newPassword = ref('');
+const confirmNewPassword = ref('');
 
 definePageMeta({
     middleware: ['user-only']
 });
 
 watch(authUser, () => {
-    if (authUser.userId == '') goToSignInPage();
+    if (!authUser?.value || authUser?.value?.userId == '') {
+        goToSignInPage();
+    }
 });
+
+const errors = ref({
+    password: '',
+    name: ''
+});
+
+const invalidNewPassword = computed(() => {
+    return errors.value.password !== '' && typeof errors.value.password === 'string';
+});
+
+const invalidCurrentPassword = computed(() => {
+    return currentPassword.value === '';
+});
+
+watch(newName, () => {
+    errorsName(isEditingName, newName, errors);
+});
+
+watch(newPassword, () => {
+    errorsPassword(isEditingPassword, newPassword, confirmNewPassword, errors);
+});
+
+watch(confirmNewPassword, () => {
+    errorsPassword(isEditingPassword, newPassword, confirmNewPassword, errors);
+});
+
+const onEditNameClick = () => {
+    isEditingName.value = true;
+    newName.value = authUser.value.name;
+}
+
+const onSaveNameClick = async () => {
+    if (!isEditingName.value) isEditingName.value = true;
+
+    errorsName(isEditingName, newName, errors);
+
+    if (errors.value.name !== '') return
+
+    try {
+        const data = await updateName(newName.value);
+        if (data && data !== '') {
+            errors.value.name = '';
+            isEditingName.value = false;
+            return;
+        }
+    } catch (error) {
+        console.error(error);
+        errors.value.name = 'Failed to edit name. Please try again.';
+        return;
+    }
+    errors.value.name = 'Failed to edit name. Please try again.';
+}
+
+const onCancelNameClick = () => {
+    isEditingName.value = false;
+}
+
+const onEditPasswordClick = () => {
+    isEditingPassword.value = true;
+    errors.value.password = '';
+    currentPassword.value = '';
+    newPassword.value = '';
+    confirmNewPassword.value = '';
+}
+
+const onSavePasswordClick = async () => {
+    if (!isEditingPassword.value) isEditingPassword.value = true;
+
+    errorsPassword(isEditingPassword, newPassword, confirmNewPassword, errors);
+
+    if (errors.value.password !== '') return
+
+    try {
+        const data = await updatePassword(currentPassword.value, newPassword.value);
+        if (data && data !== '') {
+            errors.value.password = '';
+            isEditingPassword.value = false;
+            return;
+        }
+    } catch (error) {
+        console.error(error);
+        errors.value.password = 'Failed to edit password. Please try again.';
+        return;
+    }
+    errors.value.password = 'Failed to edit password. Please try again.';
+}
+
+const onCancelPasswordClick = () => {
+    currentPassword.value = '';
+    newPassword.value = '';
+    confirmNewPassword.value = '';
+    isEditingPassword.value = false;
+}
 
 </script>
 
@@ -51,7 +135,7 @@ watch(authUser, () => {
                                 <div class="text-500 w-6 md:w-2 font-medium">Name</div>
                                 <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">
                                     <template v-if="isEditingName">
-                                        <InputText v-model="editedName" />
+                                        <InputText v-model="newName" />
                                     </template>
                                     <template v-else>
                                         {{ authUser.name }}
@@ -59,20 +143,52 @@ watch(authUser, () => {
                                 </div>
                                 <div class="w-6 md:w-2 flex justify-content-end">
                                     <template v-if="!isEditingName">
-                                        <Button label="Edit" icon="pi pi-pencil" class="p-button-text" @click="editName" />
+                                        <Button label="Edit" icon="pi pi-pencil" class="p-button-text" @click="onEditNameClick"/>
                                     </template>
                                     <template v-else>
-                                        <Button label="Save" icon="pi pi-check" @click="saveName" />
-                                        <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="cancelEdit" />
+                                        <Button label="Save" icon="pi pi-check" @click="onSaveNameClick" />
+                                        <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="onCancelNameClick" />
                                     </template>
                                 </div>
+                                <div v-if="isEditingName">
+                                    <small id="editProfile-error" class="p-error mb-5" v-if="errors.name !== ''">{{ errors.name }}</small>
+                                </div>
                             </li>
-                            <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
+                            <li v-if="!isEditingPassword" class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
                                 <div class="text-500 w-6 md:w-2 font-medium">Password</div>
                                 <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1 line-height-3">
-                                    •••••••• </div>
+                                    ••••••••
+                                </div>
                                 <div class="w-6 md:w-2 flex justify-content-end">
-                                    <Button label="Edit" icon="pi pi-pencil" class="p-button-text"></Button>
+                                    <Button label="Edit" icon="pi pi-pencil" class="p-button-text" @click="onEditPasswordClick" />
+                                </div>
+                            </li>
+                            <li v-if="isEditingPassword" class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
+                                <div class="text-500 w-6 md:w-2 font-medium">Current password</div>
+                                <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">
+                                    <Password v-model="currentPassword" :invalid="invalidCurrentPassword" :toggleMask="true" inputClass="w-full"></Password>
+                                </div>
+                            </li>
+                            <li v-if="isEditingPassword" class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
+                                <div class="text-500 w-6 md:w-2 font-medium">New password</div>
+                                <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">
+                                    <Password v-model="newPassword" :invalid="invalidNewPassword" :toggleMask="true" inputClass="w-full"></Password>
+                                </div>
+                            </li>
+                            <li v-if="isEditingPassword" class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
+                                <div class="text-500 w-6 md:w-2 font-medium">Confirm new password</div>
+                                <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">
+                                    <Password v-model="confirmNewPassword" :invalid="invalidNewPassword" :toggleMask="true" inputClass="w-full"></Password>
+                                </div>
+                            </li>
+                            <li v-if="isEditingPassword" class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
+                                <div class="text-500 w-6 md:w-2 font-medium"></div>
+                                <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">
+                                    <Button label="Save" icon="pi pi-check" @click="onSavePasswordClick" />
+                                    <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="onCancelPasswordClick" />
+                                </div>
+                                <div v-if="isEditingPassword">
+                                    <small id="editProfile-error" class="p-error mb-5" v-if="errors.password !== ''">{{ errors.password }}</small>
                                 </div>
                             </li>
                             <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
@@ -109,5 +225,12 @@ watch(authUser, () => {
     <AppConfig simple />
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+:deep(.p-button) {
+    overflow: unset;
+}
+
+:deep(.p-button label) {
+    display: none;
+}
 </style>
