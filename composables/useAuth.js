@@ -122,6 +122,27 @@ export const useAuth = () => {
         };
     };
 
+    const updateName = async (name) => {
+        try {
+            const data = await $fetch('/api/user/updatename', {
+                method: 'POST',
+                body: name,
+                headers: {
+                    'Content-Type': 'text/plain'
+                }
+            });
+            if (data.isAdmin) {
+                userAdmin.value = true;
+            } else {
+                userAdmin.value = false;
+            }
+            setUser(data.user);
+            return data;
+        } catch (err) {
+            return null;
+        }
+    };
+
     return {
         signUp,
         signUpAgree,
@@ -133,5 +154,6 @@ export const useAuth = () => {
         userAdmin,
         signOut,
         authUser,
+        updateName,
     };
 };

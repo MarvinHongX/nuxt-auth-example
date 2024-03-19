@@ -13,9 +13,9 @@ const agreeButtonEnabled = computed(() => {
     return agrees.value.includes("agree1") && agrees.value.includes("agree2");
 });
 
-
 definePageMeta({
-    layout: false
+    layout: false,
+    middleware: ['signed-in']
 });
 
 const onClickAgreeAll = (checked) => {

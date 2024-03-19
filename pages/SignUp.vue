@@ -43,9 +43,8 @@ const errors = ref({
 
 definePageMeta({
     layout: false,
-    middleware: ['signup-agree-token-only']
+    middleware: ['signup-agree-token-only', 'signed-in']
 });
-
 
 watch(userId, () => {
     errorsUserId(editing, userId, errors);

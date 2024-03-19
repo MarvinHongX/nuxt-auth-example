@@ -1,15 +1,33 @@
 <script setup>
 import { ref, computed } from 'vue';
 import AppConfig from '@/layouts/AppConfig.vue';
-const { authUser } = await useAuth()
+const { authUser, updateName } = await useAuth()
 const { flag_placeholderUrl } = useImg();
+
+const editedName = ref(null);
+const isEditingName = ref(false);
+
+const editName = () => {
+    isEditingName.value = true;
+    editedName.value = authUser.value.name;
+}
+
+const saveName = () => {
+    updateName(editedName.value);
+    isEditingName.value = false;
+}
+
+const cancelEdit = () => {
+
+    isEditingName.value = false;
+}
 
 definePageMeta({
     middleware: ['user-only']
 });
 
 watch(authUser, () => {
-    goToSignInPage();
+    if (authUser.userId == '') goToSignInPage();
 });
 
 </script>
@@ -31,9 +49,22 @@ watch(authUser, () => {
                         <ul class="list-none p-0 m-0">
                             <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
                                 <div class="text-500 w-6 md:w-2 font-medium">Name</div>
-                                <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">{{ authUser?.name  }}</div>
+                                <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">
+                                    <template v-if="isEditingName">
+                                        <InputText v-model="editedName" />
+                                    </template>
+                                    <template v-else>
+                                        {{ authUser.name }}
+                                    </template>
+                                </div>
                                 <div class="w-6 md:w-2 flex justify-content-end">
-                                    <Button disabled class="p-button-text" ></Button>
+                                    <template v-if="!isEditingName">
+                                        <Button label="Edit" icon="pi pi-pencil" class="p-button-text" @click="editName" />
+                                    </template>
+                                    <template v-else>
+                                        <Button label="Save" icon="pi pi-check" @click="saveName" />
+                                        <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="cancelEdit" />
+                                    </template>
                                 </div>
                             </li>
                             <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">

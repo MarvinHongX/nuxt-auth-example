@@ -11,7 +11,8 @@ const { signIn } = await useAuth()
 const { logoUrl } = useImg();
 
 definePageMeta({
-    layout: false
+    layout: false,
+    middleware: ['signed-in']
 });
 
 watch(userId, () => {

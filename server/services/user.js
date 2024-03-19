@@ -1,4 +1,4 @@
-import { getUserById, getUserByPhone, createUser, getUsers } from "@/server/models/user";
+import { getUserById, getUserByPhone, createUser, getUsers, updateUserName } from "@/server/models/user";
 import { hashPassword, verifyPassword } from "@/server/utils/password";
 import { createAgreeToken, verifyAgreeToken, verifyToken } from "@/server/utils/session"
 
@@ -134,5 +134,12 @@ const allUsers = async (event) => {
     return await getUsers();
 };
 
+const updateName = async (userId, name) => {
+    if (!userId || userId == '') return false;
+    if (!name || name == '') return false;
 
-export { signUpAgree, signUpAgreed, signUpUser, signInUser, existUser, helpUser, helpCodeUser, getTokenUser, allUsers }
+    const user = await updateUserName(userId, name);
+    return user || null;
+};
+
+export { signUpAgree, signUpAgreed, signUpUser, signInUser, existUser, helpUser, helpCodeUser, getTokenUser, allUsers, updateName }

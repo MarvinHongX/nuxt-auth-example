@@ -53,5 +53,18 @@ const createUser = async (user) => {
     const newUser = users.find(u => u.userId === user.userId);
     return Promise.resolve(newUser || null);
 };
+
+const updateUserName = async (userId, name) => {
+    const userToUpdate = users.find(user => user.userId === userId);
+    
+    if (!userToUpdate) {
+        throw new Error(`User with userId ${userId} not found`);
+    }
+    
+    userToUpdate.name = name;
+    
+    return userToUpdate;
+};
   
-export { getUsers, getUserById, getUserByPhone, createUser }
+  
+export { getUsers, getUserById, getUserByPhone, createUser, updateUserName }
